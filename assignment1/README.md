@@ -1,4 +1,4 @@
-# COMP4901B Homework 1 — Baby LLaMA2 Pretraining + Data Pipeline
+# MAIE5531 Homework 1 — Baby LLaMA2 Pretraining + Data Pipeline
 
 **<span style="color: red;">Due Date: 2025-10-08 23:59:59</span>**
 
