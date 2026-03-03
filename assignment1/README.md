@@ -1,36 +1,34 @@
-# MAIE5531 Homework 1 — Baby LLaMA2 Pretraining + Data Pipeline
+# MAIE5531 Assignment 1 — Baby LLaMA2 Pretraining + Data Pipeline
 
-**<span style="color: red;">Due Date: 2025-10-08 23:59:59</span>**
+**<span style="color: red;">Due Date: 2026-03-22 23:59:59</span>**
 
 **Full score: 100 points.**
 
-This repository contains the starter code and tooling for Homework 1. You will:
+This repository contains the starter code and tooling for Assignment 1. You will:
 - Build a small-scale data preprocessing pipeline over a Common Crawl WARC shard dataset and a toy topic dataset for pretraining language models.
 - Implement core LLaMA2 components and pretrain a 42M‑parameter model on the BabyLM corpora.
-- Implement and run text generation (temperature sampling) from the language model and analyze outputs.
+- Implement and run text generation (temp-rate sampling) from the language model and analyze outputs.
 
-You can either use your own laptop/machine if they have GPUs or use free Google Colab ([Getting Started With Google Colab: A Beginners Guide](https://www.marqo.ai/blog/getting-started-with-google-colab-a-beginners-guide).) to perform the experiments.
+You can either use your own laptop/machine if it has GPUs or use free Google Colab ([Getting Started With Google Colab: A Beginners Guide](https://www.marqo.ai/blog/getting-started-with-google-colab-a-beginners-guide)) to perform the experiments.
 
-This writeup is organized as follows:
+This write-up is organized as follows:
 - [Rules](#rules) is the base rule
-- [Your Tasks](#your-tasks) is the main part and contain all the tasks you should complete for this homework
+- [Your Tasks](#your-tasks) is the main part and contains all the tasks you should complete for this assignment.
 - [Setup](#setup) is the basic setup for this codebase
 - [Running the Pipelines](#running-the-pipelines) is the detailed instructions for using the code
 - [Important Notes](#important-notes) are some notes about using the code
-- [Submission](#submission) contains instructions on how to submit your homework
+- [Submission](#submission) contains instructions on how to submit your assignment.
 - [Quick Reference](#quick-reference)
 - [Repo Structure](#repo-structure)
 - [Troubleshooting](#troubleshooting) are some helpful tips. You are welcome to ask questions on Canvas as well.
 
-## Rules
-Detailed course logistics is at [here](https://docs.google.com/document/d/1mWm_TYYQpD3NpJISlFQGurBIXxWjizEc1zVffIDhiXU/edit?usp=sharing). 
+## Rules 
 
-1. You need to work on the homework independently, without collaborating with other humans.
-2. You are allowed to collaborate with other AIs. Actually you are encouraged to use AI tools, because this codebase may involve some parameters or tools that you are not familiar with -- and we certainly cannot teach everything during the lectures. Generally AI tools can help a lot explaining them.
-3. As noted in the logistics, each student will have a total of three free late (calendar) days to use for homeworks. Once these late days are exhausted, any assignments turned in late will be penalized 20% per late day. However, no assignment will be accepted more than three days after its due date.
-4. For questions about his homework, please post on the Canvas 
+1. You need to work on the Assignment independently, without collaborating with other humans.
+2. You are allowed to collaborate with other AIs. Actually, you are encouraged to use AI tools, because this codebase may involve some parameters or tools that you are not familiar with -- and we certainly cannot teach everything during the lectures. Generally, AI tools can help a lot in explaining them.
+3. For questions about his Assignment, please post on the Canvas 
 
-Honor code violation will be directly cause failing the course.
+Honor code violations will directly cause failing the course.
 
 
 ## Your Tasks
@@ -44,7 +42,7 @@ Honor code violation will be directly cause failing the course.
   - `html_to_text`, `replace_pii`, `clean_text`, `heuristic_quality_filter`, `is_english_text`, `deduplicate_texts`.
 - `heuristic_quality_filter(text: str) -> bool`: Return `True` only when the document passes all quality gates from the starter code. Specifically, ensure the text contains no entries from `bad_word_list.txt`, includes at least one character from `string.punctuation`, has some non-whitespace content, and that 80% or more of its characters are alphanumeric, punctuation, or whitespace.
 - `remove_pii(text: str) -> str`: Mask clear PII patterns before further filtering. Replace U.S. Social Security numbers of the form `XXX-XX-XXXX` by converting every digit to `X`, and replace any 10-digit phone number prefixed with `+1` by an all-`X` version (preserving the leading `+`). Leave other text untouched.
-- `clean_text(text: str) -> str`: Split the document into paragraphs with `text.split("\n")`, drop paragraphs that contain more than 100 alphanumeric characters with no whitespace between them., and drop paragraphs that do not contain punctuation. Join the surviving paragraphs with newline characters in their original order.
+- `clean_text(text: str) -> str`: Split the document into paragraphs with `text.split("\n")`, drop paragraphs that contain more than 100 alphanumeric characters with no whitespace between them, and drop paragraphs that do not contain punctuation. Join the surviving paragraphs with newline characters in their original order.
 
 (5 pts) 2.2. From `data_preprocess/`, run the pipeline to filter the WARC dump and deduplicate the topic dataset:
   - `cd data_preprocess`
@@ -94,14 +92,14 @@ Learning Rate
   - Training setup (GPU/CPU, effective batch size, sequence length, LR, warmup, steps).
   - Loss curve (per‑token loss vs. updates). A screenshot from your console or wandb is fine.
 
-**Note on Logging and Visualization**: The training script will automatically attempt to use [Weights & Biases (wandb)](https://wandb.ai) to log and plot training statistics including losses, learning rates, and validation metrics. This provides beautiful real-time dashboards and automatic plot generation. However, **wandb is completely optional** - if you don't set up a wandb account or API key, the training script will gracefully skip wandb logging and continue working normally. All metrics will still be printed to the console. If you choose not to use wandb, you may need to manually create loss curve plots from the console output for your report. If you want to try using wandb, you can check [wandb quickstart](https://docs.wandb.ai/quickstart) and [Important Notes](#important-notes) for more details.
+**Note on Logging and Visualization**: The training script will automatically attempt to use [Weights & Biases (wandb)](https://wandb.ai) to log and plot training statistics, including losses, learning rates, and validation metrics. This provides beautiful real-time dashboards and automatic plot generation. However, **wandb is completely optional** - if you don't set up a wandb account or API key, the training script will gracefully skip wandb logging and continue working normally. All metrics will still be printed to the console. If you choose not to use wandb, you may need to manually create loss curve plots from the console output for your report. If you want to try using wandb, you can check [wandb quickstart](https://docs.wandb.ai/quickstart) and [Important Notes](#important-notes) for more details.
 
 ### 3. (40 points) Part 3 — Generation & analysis
-(20pts) 3.1 Implement `generate()` in `llama_training/llama.py` (greedy for `temp=0.0`, temperature sampling and top‑k for `temp>0`).
+(20pts) 3.1 Implement `generate()` in `llama_training/llama.py` (greedy for `temp=0.0`, temp-rate sampling and top‑k for `temp>0`).
 
 **Supplementary for problem 3.1: Background on different sampling methods**
 
-As we learned in class, at inference time, for each step we predict the next token. This is achieved by sampling from a probability distribution over all tokens in the vocabulary, and this probability distribution is computed from a softmax function:
+As we learned in class, at inference time, for each step, we predict the next token. This is achieved by sampling from a probability distribution over all tokens in the vocabulary, and this probability distribution is computed from a softmax function:
 
 $$P(\text{next token} = w_i) = \frac{e^{z_i}}{\sum_{j=1}^{V} e^{z_j}}$$
 
@@ -109,7 +107,7 @@ where:
 - $z_i$ is called the logit for token $i$
 - $V$ is the vocabulary size
 
-In practice, however, we can add a temperature parameter $T$ to the softmax function to control the randomness of the sampling:
+In practice, however, we can add a temp-rate parameter $T$ to the softmax function to control the randomness of the sampling:
 
 $$P(\text{next token} = w_i) = \frac{e^{z_i/T}}{\sum_{j=1}^{V} e^{z_j/T}}$$
 
@@ -117,20 +115,20 @@ When $T<1$, then the distribution becomes sharper, and sampling is more determin
 
 Different sampling strategies in language models include:
 - **Greedy sampling** ($T \to 0$): Always pick the highest probability token
-- **Temperature sampling** ($T > 0$): Sample from the softmax distribution, where higher $T$ increases randomness
+- **temp-rate sampling** ($T > 0$): Sample from the softmax distribution, where higher $T$ increases randomness
 - **Top-k sampling**: Restrict sampling to the $k$ most likely tokens before applying softmax. This is like masking the tokens outside the top $k$ most likely tokens. In class, we have learned how to do attention masking, but here the implementation should be quite similar since they are both softmax. Top-K sampling is also called nucleus sampling.
 
 
 
-(20pts) 3.2 Generate using two temperatures `temp=0.0` and `temp=0.5` with temperate sampling and compare:
+(20pts) 3.2 Generate using two temp-rates `temp=0.0` and `temp=0.5` with temp-rate sampling and compare:
   - `cd llama_training`
   - `python run_llama.py --pretrained-model-path YOUR_TRAINED_MODEL.pt --option generate`
   - By default this writes `generated-sentence-temp-0.txt` and `generated-sentence-temp-1.txt`.
-  - Also try generating with our provided fully trained model:
+  - Also, try generating with our provided fully trained model:
   - https://huggingface.co/yuzhen17/llama2-42M-babylm (download the checkpoint locally and pass its path to `--pretrained-model-path`).
 - Report (paste into the PDF):
   - (10pts) Generated outputs for `temp=0.0` and `temp=0.5` from both your trained model and our provided model.
-  - (10pts) Explain which temperate is better and why (e.g., diversity vs. coherence).
+  - (10pts) Explain which temp-rate is better and why (e.g., diversity vs. coherence).
 
 
 ## Setup
@@ -164,12 +162,12 @@ Install the running env using
   
   - `--tokenized_dir` (default: `None`, falls back to `<data_path>/tokenized`): Directory to cache pre-tokenized data as binary files. Raw text files are converted to compact `uint16` token arrays stored as `.bin` files. A `metadata.json` file tracks which source files correspond to which token files and their token counts. This dramatically speeds up subsequent training runs since tokenization only needs to happen once.
   
-  - `--overwrite_tokenized` (flag): Forces regeneration of cached tokenized data. When enabled, ignores existing tokenized cache and re-tokenizes all text files. Useful when you change tokenizer settings or update the source text files.
+  - `--overwrite_tokenized` (flag): Forces regeneration of cached tokenized data. When enabled, ignores the existing tokenized cache and re-tokenizes all text files. Useful when you change tokenizer settings or update the source text files.
 
 #### **Sequence and Batch Configuration**
   - `--block_size` (default: `512`): Sequence length in tokens for each training example. Each training sequence contains exactly this many tokens. The dataset splits longer tokenized text into non-overlapping chunks of this size. Shorter sequences save GPU memory but may reduce model quality. The code uses autoregressive language modeling where tokens 0 to N-1 predict tokens 1 to N.
   
-  - `--batch_size` (default: `8`): Effective batch size after gradient accumulation. This is the total number of sequences processed before applying one optimizer update. The actual implementation uses gradient accumulation to achieve this target even if GPU memory can't fit the full batch.
+  - `--batch_size` (default: `8`): Effective batch size after gradient accumulation. This is the total number of sequences processed before applying one optimizer update. The actual implementation uses gradient accumulation to achieve this target, even if GPU memory can't fit the full batch.
   
   - `--micro_batch_size` (default: same as `batch_size`): Per-step batch size before gradient accumulation. Number of sequences processed in each forward/backward pass. If `micro_batch_size < batch_size`, gradients are accumulated across multiple micro-batches before updating parameters. For example, if `batch_size=512` and `micro_batch_size=32`, gradients accumulate over 16 steps.
 
@@ -193,7 +191,7 @@ Install the running env using
   
   - `--test_path` (default: `None`): Directory containing test text files for optional final evaluation.
   
-  - `--test_tokenized_dir` (default: `None`): Cache directory for tokenized test data. Test evaluation runs only once at the very end of training, after all epochs complete. Results are logged but don't affect checkpointing.
+  - `--test_tokenized_dir` (default: `None`): Cache directory for tokenized test data. Test evaluation runs only once at the very end of training, after all epochs are complete. Results are logged but don't affect checkpointing.
 
 #### **Checkpointing and Resume**
   - `--auto_resume` (default: `False`): Automatically resume from interrupted training. Creates two types of checkpoints: (1) Regular checkpoints named like `<run_name>-pretrain-<epochs>-<lr>.pt`, saved after each epoch and when validation improves; (2) Rolling resume checkpoints named `*-resume.pt`, updated throughout training for robust restart capability. When enabled, training automatically detects and loads from the resume checkpoint if it exists.
@@ -224,7 +222,7 @@ Install the running env using
 - Validation and save frequency
   - `--val_per_steps N` runs validation every N optimizer updates. The script saves the best checkpoint when validation improves and also at epoch boundaries.
 - Pretraining initialization
-  - If the file passed as `--pretrained-model-path` exists (default `llama2-42M-babylm.pt` from setup), training will initialize from it; otherwise it trains from scratch. Change or remove the path to control this behavior.
+  - If the file passed as `--pretrained-model-path` exists (default `llama2-42M-babylm.pt` from setup), training will initialize from it; otherwise, it trains from scratch. Change or remove the path to control this behavior.
 - wandb logging
   - Set `export WANDB_API_KEY=...` and pass `--wandb_project`/`--wandb_entity` to enable logging (see `llama_training/run_babylm.sh`).
   - To disable wandb, don’t set a project/entity; training will still print metrics.
@@ -248,8 +246,10 @@ Submit a zip of the codebase (only the `assignment1` directory) and a PDF report
   - Notes on stability and any changes you made to save memory or resume.
 - Part 3: Generation
   - Command used and the checkpoint path.
-  - Generated outputs (`temp=0.0` and `temp=0.5`) from both your trained model and our provided model .
-  - Your explanation of which is better and why (coherence vs. diversity; effect of temperature and top‑k).
+  - Generated outputs (`temp=0.0` and `temp=0.5`) from both your trained model and our provided model.
+  - Your explanation of which is better and why (coherence vs. diversity; effect of temp-rate and top‑k).
+  
+Canvas Submission Link: https://canvas.ust.hk/courses/69420/assignments/427483
 
 Also include:
 - Any edits you made to `run_babylm.sh` (parameters and rationale).
