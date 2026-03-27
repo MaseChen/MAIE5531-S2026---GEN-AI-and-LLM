@@ -1,4 +1,4 @@
-# MAIE5531 Assignment 1 — Baby LLaMA2 Pretraining + Data Pipeline
+# MAIE5531 Programming Assignment 2 — Baby LLaMA2 Pretraining + Data Pipeline
 
 **<span style="color: red;">Due Date: 2026-03-22 23:59:59</span>**
 
