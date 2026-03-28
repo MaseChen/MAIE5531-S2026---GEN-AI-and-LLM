@@ -35,6 +35,7 @@ Honor code violations will directly cause failing the course.
 
 ### 0. (5 Points) Data download 
 - Run `./download_data.sh` from the repo root to fetch both Common Crawl files (WARC/WET/WAT) and the BabyLM datasets.
+  - `./download_data.sh` may not work. Try `bash download_data.sh`. If some of the commands do not work or generate errors, please look into the `download_data.sh` file and find the specific commands, then look for ways to resolve the issue. 
 - The script writes CC files into `data_preprocess/` and BabyLM into `llama_training/`.
 
 ### 1. (15 points) Part 1 — Data preprocessing (data_preprocess/) 
