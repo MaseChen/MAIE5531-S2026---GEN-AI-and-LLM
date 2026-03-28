@@ -236,7 +236,7 @@ Install the running env using
 
 ## Submission
 
-Submit a zip of the codebase (only the `assignment2` directory) and a PDF report to Canvas. Your PDF should include your full name, student ID, and your UST email. For the contents:
+Submit a zip of the codebase (include only the modified files, `data_preprocess/homework.py`, `llama_training/llama.py`, `llama_training/run_llama.py`, exclude all other files in the `assignment2` directory) and a PDF report to Canvas. Your PDF should include your full name, student ID, and your UST email. For the contents:
 - Part 1: WARC filtering and topic deduplication
   - Command used.
   - Number of records processed and passed; number after deduplication.
