@@ -4,6 +4,8 @@
 
 **Full score: 100 points.**
 
+Acknowledgement: this assignment is adopted from Prof. Junxian He's COMP4901B. 
+
 This repository contains the starter code and tooling for Assignment 2. You will:
 - Build a small-scale data preprocessing pipeline over a Common Crawl WARC shard dataset and a toy topic dataset for pretraining language models.
 - Implement core LLaMA2 components and pretrain a 42M‑parameter model on the BabyLM corpora.
