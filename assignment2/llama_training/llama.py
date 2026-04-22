@@ -100,7 +100,18 @@ class Attention(nn.Module):
         
         #TODO
         # ====================== Implement compute_query_key_value_scores here ======================
-        pass
+        scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(self.head_dim)
+
+        seq_len = query.size(-2)
+        causal_mask = torch.triu(
+            torch.ones(seq_len, seq_len, device=query.device, dtype=torch.bool),
+            diagonal=1,
+        )
+        scores = scores.masked_fill(causal_mask, float('-inf'))
+
+        attn = F.softmax(scores, dim=-1)
+        attn = self.attn_dropout(attn)
+        return torch.matmul(attn, value)
         # ====================== Implement compute_query_key_value_scores here ======================
 
 
